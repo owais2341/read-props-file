@@ -1,0 +1,35 @@
+import { run } from "../src/run";
+
+test("run successfully", async () => {
+	await expect(run({ file: "tests/fixtures/gradle.properties", property: "version" })).resolves.toBeUndefined();
+});
+test("action rejects on unknown file", async () => {
+	await expect(run({ file: "amongus.properties", property: "version" })).rejects.toThrow();
+});
+test("action rejects on no file at all", async () => {
+	await expect(run({ file: undefined as unknown as string, property: "version" })).rejects.toThrow();
+});
+test("action defaults work", async () => {
+	await expect(run({ file: "**/*.properties", property: "version", default: "1.0.0" })).resolves.toBeUndefined();
+});
+test("action outputs all properties", async () => {
+	await expect(run({ file: "**/*.properties*", all: true, default: "1.2.0" })).resolves.toBeUndefined();
+});
+test("action rejects on no property", async () => {
+	await expect(run({ file: "**/*.properties*", default: "1.2.0" })).rejects.toThrow();
+});
+test("action rejects on invalid file type", async () => {
+	await expect(run({ file: "tests/fixtures/thanos.json", all: true })).rejects.toThrow();
+});
+test("action rejects on invalid property", async () => {
+	await expect(run({ file: "tests/fixtures/trash.properties", property: "good" })).rejects.toThrow();
+});
+test("run successfully with .props file", async () => {
+	await expect(run({ file: "tests/fixtures/test.props", property: "app.name" })).resolves.toBeUndefined();
+});
+test("action outputs all properties from .props file", async () => {
+	await expect(run({ file: "tests/fixtures/test.props", all: true })).resolves.toBeUndefined();
+});
+test("action works with glob pattern for .props files", async () => {
+	await expect(run({ file: "**/*.props", property: "app.version" })).resolves.toBeUndefined();
+});

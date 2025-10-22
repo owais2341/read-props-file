@@ -1,0 +1,26 @@
+name: read-properties-action
+author: Brycen G <brycengranville@outlook.com>
+description: Pure TypeScript GitHub Action to read values from .properties and .props files, with support for glob patterns
+
+inputs:
+  file:
+    description: A file to read, may be a glob pattern
+    required: true
+  property:
+    description: A property to read from the file
+    required: false
+  all:
+    description: A flag to read and output all the properties from the file
+    required: false
+    default: 'false'
+  default:
+    description: A value to return in case of any errors
+    required: false
+
+branding:
+  color: blue
+  icon: 'file-text'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

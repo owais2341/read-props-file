@@ -1,0 +1,9 @@
+# Test props file
+app.name=MyApplication
+app.version=2.0.0
+app.environment=production
+database.url=jdbc:mysql://localhost:3306/mydb
+database.username=admin
+database.password=secret123
+logging.level=INFO
+logging.file=/var/log/app.log

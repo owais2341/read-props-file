@@ -32,7 +32,7 @@ export const run = async (inputs: Inputs): Promise<void> => {
 
 	// Basic sanity checks
 
-	if (propertiesFiles.length === 0) throw new Error(`No properties files found with pattern ${inputs.file}`);
+	// if (propertiesFiles.length === 0) throw new Error(`No properties files found with pattern ${inputs.file}`);
 
 	if (propertiesFiles.length > 1)
 		core.warning(`Multiple properties files found, using first one (${propertiesFiles[0]}).`);

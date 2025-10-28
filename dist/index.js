@@ -11857,12 +11857,15 @@ const run = async (inputs) => {
     const content = await (0,promises_namespaceObject.readFile)(propertiesFile, "utf8");
     const properties = getProperties(content);
     if (inputs.all) {
-        core.debug("🧪 Got all=true, exporting all properties as GitHub outputs");
+        const tempFile = `/tmp/${Date.now()}_props.env`;
+        let envFileContent = "";
         for (const [key, value] of Object.entries(properties)) {
+            envFileContent += `${key}="${value}"\n`;
             core.setOutput(key, value);
-            core.debug(`🧪 Set output ${key}=${value}`);
         }
-        core.info(`🚀 Successfully exported ${Object.keys(properties).length} properties as outputs`);
+        await external_node_fs_default().promises.writeFile(tempFile, envFileContent);
+        core.setOutput("env_path", tempFile);
+        core.info(`🚀 Wrote environment file: ${tempFile}`);
         return;
     }
     const { property } = inputs;

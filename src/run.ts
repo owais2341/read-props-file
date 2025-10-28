@@ -1,5 +1,4 @@
 import * as core from "@actions/core";
-// Do not use fast-glob, it's bundle size is double the size of glob
 import { readFile } from "fs/promises";
 import { glob } from "glob";
 import fs from "node:fs";
@@ -12,17 +11,13 @@ type Inputs = {
 	default?: string;
 };
 
-// Kicking ass and taking names
-
 const setSingleValue = (key: string, value: string): void => {
 	core.debug(`🧪 Setting output ${key} to ${value}`);
 	core.setOutput(key, value);
 
-	// Legacy support for previous GitHub Action
-	// Also for our integration tests that were stolen from the other GitHub Action :dab:
-
+	// Legacy compatibility
 	core.setOutput("value", value);
-	core.debug(`🧓 Setting legacy output value to ${value} (for backwards compatibility)`);
+	core.debug(`🧓 Setting legacy output value to ${value}`);
 };
 
 export const run = async (inputs: Inputs): Promise<void> => {
@@ -30,57 +25,56 @@ export const run = async (inputs: Inputs): Promise<void> => {
 	const propertiesFiles = await glob(inputs.file, { ignore: ["**/node_modules/**", "**/.gradle/**"] });
 	core.debug(`Got back propertiesFiles ${propertiesFiles}`);
 
-	// Basic sanity checks
-
-	/// if (propertiesFiles.length === 0) throw new Error(`No properties files found with pattern ${inputs.file}`);
+	if (propertiesFiles.length === 0) throw new Error(`No properties files found with pattern ${inputs.file}`);
 
 	if (propertiesFiles.length > 1)
 		core.warning(`Multiple properties files found, using first one (${propertiesFiles[0]}).`);
 
-	if (!propertiesFiles[0]?.toLowerCase()?.endsWith(".properties") && !propertiesFiles[0]?.toLowerCase()?.endsWith(".props"))
+	if (
+		!propertiesFiles[0]?.toLowerCase()?.endsWith(".properties") &&
+		!propertiesFiles[0]?.toLowerCase()?.endsWith(".props")
+	)
 		throw new Error(`File ${propertiesFiles[0]} is not a properties or props file`);
 
-	/* istanbul ignore next */
 	if (!propertiesFiles[0]) throw new Error(`File ${propertiesFiles[0]} is undefined/null... This should not happen!`);
-
-	/* istanbul ignore next */
-	if (!fs.existsSync(propertiesFiles[0]))
-		throw new Error(`File ${propertiesFiles[0]} does not exist... This should not happen!`);
+	if (!fs.existsSync(propertiesFiles[0])) throw new Error(`File ${propertiesFiles[0]} does not exist.`);
 
 	const propertiesFile = propertiesFiles[0];
 	core.debug(`🤔 Using properties file ${propertiesFile}`);
-	const content = await readFile(propertiesFile, "utf8"),
-		// TODO: Make this less ugly because TypeScript loves to be difficult
-		properties = propertiesToObject(content);
+	const content = await readFile(propertiesFile, "utf8");
+	const properties = propertiesToObject(content);
+
+	// ✅ If "all" is true, export all props as GitHub outputs
 	if (inputs.all) {
-		core.debug("🧪 Got all as true, setting all properties as outputs");
+		core.debug("🧪 Got all=true, exporting all properties as GitHub outputs");
+
 		for (const [key, value] of Object.entries(properties)) {
-			core.debug(`🧪 Setting output ${key} to ${value}`);
 			core.setOutput(key, value);
+			core.debug(`🧪 Set output ${key}=${value}`);
 		}
-		core.info("🚀 Successfully set all properties as outputs");
+
+		core.info(`🚀 Successfully exported ${Object.keys(properties).length} properties as outputs`);
 		return;
 	}
+
+	// Handle single property mode
 	const { property } = inputs;
 	if (!property) throw new Error("Property is not defined");
 
-	// Why am I forced to do all of this. Why is life hard. Why
-
-	// @ts-ignore Recommended approach for this problem..? https://www.typescriptlang.org/tsconfig#suppressImplicitAnyIndexErrors
 	const value = properties[property];
-
 	if (value) {
-		core.debug(`🧪 Setting output ${property} to ${value}`);
 		setSingleValue(property, value);
 		core.info(`🚀 Successfully set property ${property} as output`);
 		return;
 	}
+
 	const defaultValue = inputs.default;
 	if (defaultValue) {
-		core.debug(`🧪 Got a default value ${defaultValue} for property ${property} returning that instead`);
 		setSingleValue(property, defaultValue);
 		core.info(`🚀 Successfully set property ${property} as output`);
 		return;
 	}
+
 	throw new Error(`Property ${property} not found in properties file`);
 };
+

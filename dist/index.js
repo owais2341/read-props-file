@@ -11815,18 +11815,7 @@ const glob = Object.assign(glob_, {
 });
 glob.glob = glob;
 //# sourceMappingURL=index.js.map
-;// CONCATENATED MODULE: ./node_modules/.pnpm/properties-file@3.5.9/node_modules/properties-file/lib/esm/unescape/index.js
-var unescapeContent=function(r){return r.replace(/\\[^u]|\\u.{4}/g,(function(r){var e=r.charAt(1);switch(e){case"f":return"\f";case"n":return"\n";case"r":return"\r";case"t":return"\t";case"u":var t=r.slice(2,6);if(!/[\da-f]{4}/i.test(t))throw new Error("malformed escaped unicode characters '\\u".concat(t,"'"));return String.fromCodePoint(Number.parseInt(t,16));default:return e}}))};
-;// CONCATENATED MODULE: ./node_modules/.pnpm/properties-file@3.5.9/node_modules/properties-file/lib/esm/property.js
-var __values=undefined&&undefined.__values||function(t){var e="function"==typeof Symbol&&Symbol.iterator,i=e&&t[e],s=0;if(i)return i.call(t);if(t&&"number"==typeof t.length)return{next:function(){return t&&s>=t.length&&(t=void 0),{value:t&&t[s++],done:!t}}};throw new TypeError(e?"Object is not iterable.":"Symbol.iterator is not defined.")};var Property=function(){function t(t,e,i){this.key="",this.escapedKey="",this.hasNoKey=!1,this.hasMultilineKey=!1,this.keyCollisionLines=[],this.hasKeyCollisions=!1,this.value="",this.escapedValue="",this.hasNoValue=!1,this.newlinePositions=[],this.linesContent=t.content,this.startingLineNumber=e,this.endingLineNumber=e,this.previousProperty=i,null==i||i.setNextProperty(this)}return t.prototype.setNextProperty=function(t){this.nextProperty=t},t.prototype.addLine=function(t){this.linesContent.length>0&&(this.newlinePositions.push(this.linesContent.length),this.endingLineNumber++),this.linesContent+=t.content},t.prototype.setKeyAndValue=function(){this.findSeparator(),void 0!==this.separatorPosition&&void 0!==this.separatorLength?(this.hasNoKey||(this.escapedKey=this.linesContent.slice(0,this.separatorPosition),this.key=this.unescapeLine(this.escapedKey,this.startingLineNumber)),this.hasNoValue||(this.escapedValue=this.linesContent.slice(this.separatorPosition+this.separatorLength),this.value=this.unescapeLine(this.escapedValue,this.startingLineNumber))):this.hasNoValue&&(this.escapedKey=this.linesContent,this.key=this.unescapeLine(this.escapedKey,this.startingLineNumber))},t.prototype.unescapeLine=function(t,e){try{return unescapeContent(t)}catch(t){throw new Error("".concat(t.message," in property starting at line ").concat(e))}},t.prototype.findSeparator=function(){var t,e;if(!(this.hasNoKey||this.hasNoValue||this.separatorPosition)){try{for(var i=__values(this.linesContent.matchAll(/[\t\f :=]/g)),s=i.next();!s.done;s=i.next()){var n=s.value.index,o=this.linesContent.slice(0,n).match(/(\\+)$/);if(o)if(!!(o[1].length%2))continue;var r="";this.separatorPosition=n;var a=this.linesContent.slice(n),h=(a.match(/^([\t\n\v\f\r ]+)/)||[""])[0];h.length>0&&(r+=h,a=a.slice(h.length)),/[:=]/.test(a[0])&&(r+=a[0],r+=((a=a.slice(1)).match(/^([\t\n\v\f\r ]+)/)||[""])[0]),this.separatorLength=r.length,this.valuePosition=this.separatorPosition+this.separatorLength,this.separator=this.linesContent.slice(this.separatorPosition,this.separatorPosition+this.separatorLength),n||(this.hasNoKey=!0);break}}catch(e){t={error:e}}finally{try{s&&!s.done&&(e=i.return)&&e.call(i)}finally{if(t)throw t.error}}void 0===this.separatorPosition?this.hasNoValue=!0:this.newlinePositions.length>0&&this.newlinePositions[0]<this.separatorPosition&&(this.hasMultilineKey=!0)}},t}();
-;// CONCATENATED MODULE: ./node_modules/.pnpm/properties-file@3.5.9/node_modules/properties-file/lib/esm/property-line.js
-var PropertyLine=function(t,i){if(this.isContinuing=!1,this.isBlank=!1,this.isComment=!1,this.content=t.trimStart(),this.isMultiline=i,0===this.content.length)this.isBlank=!0;else if(this.isMultiline||(this.isComment=!!/^[!#]/.test(this.content)),!this.isComment){var n=this.content.match(/(\\+)$/);n&&(this.isContinuing=!!(n[1].length%2),this.isContinuing&&(this.content=this.content.slice(0,-1)))}};
-;// CONCATENATED MODULE: ./node_modules/.pnpm/properties-file@3.5.9/node_modules/properties-file/lib/esm/properties.js
-var properties_values=undefined&&undefined.__values||function(e){var t="function"==typeof Symbol&&Symbol.iterator,r=t&&e[t],n=0;if(r)return r.call(e);if(e&&"number"==typeof e.length)return{next:function(){return e&&n>=e.length&&(e=void 0),{value:e&&e[n++],done:!e}}};throw new TypeError(t?"Object is not iterable.":"Symbol.iterator is not defined.")},__read=undefined&&undefined.__read||function(e,t){var r="function"==typeof Symbol&&e[Symbol.iterator];if(!r)return e;var n,i,o=r.call(e),s=[];try{for(;(void 0===t||t-- >0)&&!(n=o.next()).done;)s.push(n.value)}catch(e){i={error:e}}finally{try{n&&!n.done&&(r=o.return)&&r.call(o)}finally{if(i)throw i.error}}return s};var BOM="\ufeff";var BOM_CODE_POINT=BOM.codePointAt(0);var DEFAULT_END_OF_LINE_CHARACTER="\n";var getFirstEolCharacter=function(e){var t=e.indexOf("\n");return-1===t?void 0:"".concat("\r"===e[t-1]?"\r":"","\n")};var Properties=function(){function e(e){var t;this.collection=[],this.keyLineNumbers={};var r="string"==typeof e?e:e.toString();this.hasBom=r.codePointAt(0)===BOM_CODE_POINT,this.eolCharacter=null!==(t=getFirstEolCharacter(r))&&void 0!==t?t:DEFAULT_END_OF_LINE_CHARACTER,this.lines=(this.hasBom?r.slice(1):r).split(/\r?\n/),this.parseLines()}return e.prototype.parseLines=function(){var e,t;this.collection=[],this.keyLineNumbers={};var r,n,i=0;try{for(var o=properties_values(this.lines),s=o.next();!s.done;s=o.next()){var l=s.value;i++;var a=new PropertyLine(l,!!r);if(r){if(r.addLine(a),a.isContinuing)continue}else{if(a.isComment||a.isBlank)continue;if(r=new Property(a,i,n),a.isContinuing)continue}this.addToCollection(r),n=r,r=void 0}}catch(t){e={error:t}}finally{try{s&&!s.done&&(t=o.return)&&t.call(o)}finally{if(e)throw e.error}}},e.prototype.addToCollection=function(e){var t;e.setKeyAndValue(),(null===(t=this.keyLineNumbers[e.key])||void 0===t?void 0:t.length)?(this.keyLineNumbers[e.key].push(e.startingLineNumber),e.hasKeyCollisions=!0,e.keyCollisionLines=this.keyLineNumbers[e.key],this.collection=this.collection.filter((function(t){return t.key!==e.key}))):this.keyLineNumbers[e.key]=[e.startingLineNumber],this.collection.push(e)},e.prototype.getKeyCollisions=function(){var e,t,r=[];try{for(var n=properties_values(Object.entries(this.keyLineNumbers)),i=n.next();!i.done;i=n.next()){var o=__read(i.value,2),s=o[0],l=o[1];l.length>1&&r.push(new KeyCollisions(s,l))}}catch(t){e={error:t}}finally{try{i&&!i.done&&(t=n.return)&&t.call(n)}finally{if(e)throw e.error}}return r},e.prototype.toObject=function(){var e={};return this.collection.forEach((function(t){e[t.key]=t.value})),e},e.prototype.format=function(e){return"".concat(this.hasBom?BOM:"").concat(this.lines.join(e||this.eolCharacter))},e}();var KeyCollisions=function(){function e(e,t){this.key=e,this.startingLineNumbers=t}return e.prototype.getApplicableLineNumber=function(){return this.startingLineNumbers.slice(-1)[0]},e}();
-;// CONCATENATED MODULE: ./node_modules/.pnpm/properties-file@3.5.9/node_modules/properties-file/lib/esm/index.js
-var getProperties=function(r){return new Properties(r).toObject()};
 ;// CONCATENATED MODULE: ./src/run.ts
-
 
 
 
@@ -11838,40 +11827,57 @@ const setSingleValue = (key, value) => {
     core.debug(`🧓 Setting legacy output value to ${value}`);
 };
 const run = async (inputs) => {
-    core.debug(`Got back file ${inputs.file}`);
+    core.debug(`📂 Searching for file pattern: ${inputs.file}`);
     const propertiesFiles = await glob(inputs.file, { ignore: ["**/node_modules/**", "**/.gradle/**"] });
-    core.debug(`Got back propertiesFiles ${propertiesFiles}`);
     if (propertiesFiles.length === 0)
         throw new Error(`No properties files found with pattern ${inputs.file}`);
     if (propertiesFiles.length > 1)
         core.warning(`Multiple properties files found, using first one (${propertiesFiles[0]}).`);
-    if (!propertiesFiles[0]?.toLowerCase()?.endsWith(".properties") &&
-        !propertiesFiles[0]?.toLowerCase()?.endsWith(".props"))
-        throw new Error(`File ${propertiesFiles[0]} is not a properties or props file`);
-    if (!propertiesFiles[0])
-        throw new Error(`File ${propertiesFiles[0]} is undefined/null... This should not happen!`);
-    if (!external_node_fs_default().existsSync(propertiesFiles[0]))
-        throw new Error(`File ${propertiesFiles[0]} does not exist.`);
     const propertiesFile = propertiesFiles[0];
-    core.debug(`🤔 Using properties file ${propertiesFile}`);
+    if (!propertiesFile)
+        throw new Error("Resolved file path is null or undefined");
+    if (!external_node_fs_default().existsSync(propertiesFile))
+        throw new Error(`File ${propertiesFile} does not exist`);
+    if (!propertiesFile.toLowerCase().endsWith(".properties") &&
+        !propertiesFile.toLowerCase().endsWith(".props"))
+        throw new Error(`File ${propertiesFile} is not a valid .properties or .props file`);
+    core.debug(`✅ Using properties file: ${propertiesFile}`);
     const content = await (0,promises_namespaceObject.readFile)(propertiesFile, "utf8");
-    const properties = getProperties(content);
+    const props = {};
+    for (const line of content.split("\n")) {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith("#"))
+            continue;
+        const eqIndex = trimmed.indexOf("=");
+        if (eqIndex === -1)
+            continue;
+        const key = trimmed.substring(0, eqIndex).trim();
+        const value = trimmed.substring(eqIndex + 1).trim();
+        props[key] = value;
+    }
     if (inputs.all) {
-        const tempFile = `/tmp/${Date.now()}_props.env`;
-        let envFileContent = "";
-        for (const [key, value] of Object.entries(properties)) {
-            envFileContent += `${key}="${value}"\n`;
+        core.debug("🧪 Got all=true → exporting all properties as outputs, JSON, and bash array");
+        for (const [key, value] of Object.entries(props)) {
             core.setOutput(key, value);
+            core.debug(`🧪 Set output ${key}=${value}`);
         }
-        await external_node_fs_default().promises.writeFile(tempFile, envFileContent);
-        core.setOutput("env_path", tempFile);
-        core.info(`🚀 Wrote environment file: ${tempFile}`);
+        const jsonOutput = JSON.stringify(props, null, 2);
+        core.setOutput("props", jsonOutput);
+        let bashArray = 'declare -A esbProps=(';
+        for (const [key, value] of Object.entries(props)) {
+            const safeKey = key.replace(/"/g, '\\"');
+            const safeValue = value.replace(/"/g, '\\"');
+            bashArray += `["${safeKey}"]="${safeValue}" `;
+        }
+        bashArray += ")";
+        core.setOutput("bash_array", bashArray);
+        core.info(`🚀 Exported ${Object.keys(props).length} properties successfully`);
         return;
     }
     const { property } = inputs;
     if (!property)
-        throw new Error("Property is not defined");
-    const value = properties[property];
+        throw new Error("Property is not defined and 'all' is not true");
+    const value = props[property];
     if (value) {
         setSingleValue(property, value);
         core.info(`🚀 Successfully set property ${property} as output`);
@@ -11880,10 +11886,10 @@ const run = async (inputs) => {
     const defaultValue = inputs.default;
     if (defaultValue) {
         setSingleValue(property, defaultValue);
-        core.info(`🚀 Successfully set property ${property} as output`);
+        core.info(`🚀 Used default value for ${property}`);
         return;
     }
-    throw new Error(`Property ${property} not found in properties file`);
+    throw new Error(`Property ${property} not found in ${propertiesFile}`);
 };
 
 ;// CONCATENATED MODULE: ./src/main.ts
